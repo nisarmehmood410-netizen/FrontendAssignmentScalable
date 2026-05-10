@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchImages } from '../services/imageService';
 import useDebouncedValue from './useDebouncedValue';
+import { resolveImageAuthor } from '../utils/helperFunctions';
 
 function normalizePeople(people) {
   if (!people) return [];
@@ -64,7 +65,7 @@ function useImageFeed(searchTerm) {
           imageUrl: img.imageUrl || img.url || '',
           url: img.url || img.imageUrl || '',
           people: normalizePeople(img.people),
-          author: img.creator?.username || img.creatorId?.username || img.author || 'Unknown',
+          author: resolveImageAuthor(img) || 'Unknown',
           rating: img.averageRating ?? img.rating ?? 0,
           comments: Array(img.commentCount || img.commentsCount || 0).fill({})
         }));

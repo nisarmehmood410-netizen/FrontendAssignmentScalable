@@ -12,6 +12,7 @@ import {
   fetchImageById,
   submitRating
 } from '../services/imageService';
+import { resolveImageAuthor } from '../utils/helperFunctions';
 
 function ImageDetailPage() {
   const { imageId } = useParams();
@@ -43,17 +44,18 @@ function ImageDetailPage() {
         const normalized = {
           ...data,
           imageUrl: data?.imageUrl || data?.url || '',
-          author:
-            data?.author ||
-            data?.creator?.username ||
-            data?.creatorId?.username ||
-            'Unknown',
+          author: resolveImageAuthor(data) || 'Unknown',
           uploadedAt: data?.uploadedAt || data?.createdAt || '—',
           rating: data?.averageRating ?? data?.rating ?? 0,
           reviewsCount: data?.ratingCount ?? data?.reviewsCount ?? 0,
           comments: (data?.comments || []).map((c) => ({
             id: c?.id || c?._id,
-            author: c?.author || c?.userName || c?.userId?.username || 'Unknown',
+            author:
+              c?.author ||
+              c?.userName ||
+              c?.user?.username ||
+              (typeof c?.userId === 'object' ? c.userId?.username : '') ||
+              'Unknown',
             text: c?.text || ''
           }))
         };
@@ -105,7 +107,11 @@ function ImageDetailPage() {
           ...(prev.comments || []),
           {
             id: newComment?.id || newComment?._id || `new-comment-${Date.now()}`,
-            author: newComment?.author || newComment?.user?.username || 'You',
+            author:
+              newComment?.author ||
+              newComment?.userName ||
+              newComment?.user?.username ||
+              'You',
             text: newComment?.text || comment.trim()
           }
         ]
@@ -186,7 +192,7 @@ function ImageDetailPage() {
             </div>
 
             <span className="detail-author">
-              {image.author || image.creator || image.creatorId?.username || 'Unknown'}
+              {resolveImageAuthor(image) || image.author || 'Unknown'}
             </span>
           </div>
 

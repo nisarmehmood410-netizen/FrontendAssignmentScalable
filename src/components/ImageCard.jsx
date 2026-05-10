@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import Card from "./Card";
 import RatingStars from "./RatingStars";
+import { resolveImageAuthor } from "../utils/helperFunctions";
 
 function ImageCard({ image }) {
-  const commentCount = image.comments?.length || 0;
+  const commentCount =
+    image.commentCount ?? image.comments?.length ?? 0;
+  const author =
+    (typeof image.author === "string" && image.author.trim()
+      ? image.author
+      : resolveImageAuthor(image)) || "Unknown";
 
   return (
     <Card className="image-card">
@@ -26,7 +32,7 @@ function ImageCard({ image }) {
           <p className="image-caption">{image.caption}</p>
 
           <div className="image-meta image-meta-row">
-            {/* <span>{image.author || image.creator || "Unknown lens"}</span> */}
+            <span>{author}</span>
 
             <div className="image-rating">
               <RatingStars
