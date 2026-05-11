@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
-import Card from "../ui/Card";
-import FeedbackEmptyState from "../components/FeedbackEmptyState";
-import GalleryImageCard from "../components/GalleryImageCard";
-import FeedbackSpinner from "../components/FeedbackSpinner";
-import GallerySearchField from "../components/GallerySearchField";
-import useExploreGallery from "../hooks/useExploreGallery";
+import Card from "../components/Card";
+import EmptyState from "../components/EmptyState";
+import LoadingIndicator from "../components/LoadingIndicator";
+import PhotoCard from "../components/PhotoCard";
+import SearchField from "../components/SearchField";
+import usePhotoFeed from "../hooks/usePhotoFeed";
 
-function GalleryExplorePage() {
+function HomePage() {
   const [query, setQuery] = useState("");
-  const { images, isLoading, errorMessage } = useExploreGallery(query);
+  const { images, isLoading, errorMessage } = usePhotoFeed(query);
 
   const summary = useMemo(() => {
     if (!images.length) return "No scenes yet";
@@ -24,7 +24,7 @@ function GalleryExplorePage() {
     if (!images.length) return null;
     const total = images.reduce(
       (acc, item) => acc + Number(item.rating || 0),
-      0
+      0,
     );
     return (total / images.length).toFixed(1);
   }, [images]);
@@ -62,13 +62,13 @@ function GalleryExplorePage() {
       </section>
 
       <Card className="toolbar-panel">
-        <GallerySearchField value={query} onChange={setQuery} />
+        <SearchField value={query} onChange={setQuery} />
       </Card>
 
-      {isLoading && <FeedbackSpinner label="Loading images..." />}
+      {isLoading && <LoadingIndicator label="Loading images..." />}
 
       {!isLoading && errorMessage && (
-        <FeedbackEmptyState title="Signal dropped" body={errorMessage} />
+        <EmptyState title="Signal dropped" body={errorMessage} />
       )}
 
       {!isLoading && !errorMessage && (
@@ -76,11 +76,11 @@ function GalleryExplorePage() {
           {images.length > 0 ? (
             <section className="image-grid">
               {images.map((img) => (
-                <GalleryImageCard key={img.id || img._id} image={img} />
+                <PhotoCard key={img.id || img._id} image={img} />
               ))}
             </section>
           ) : (
-            <FeedbackEmptyState
+            <EmptyState
               title="No scenes found"
               body="Try another search term."
             />
@@ -91,4 +91,4 @@ function GalleryExplorePage() {
   );
 }
 
-export default GalleryExplorePage;
+export default HomePage;

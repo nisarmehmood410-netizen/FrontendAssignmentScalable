@@ -1,4 +1,4 @@
-function RatingControl({ value, onRate, size = "md", readonly = false }) {
+function StarRating({ value, onRate, size = "md", readonly = false }) {
   return (
     <div className={`rating-group rating-${size}`}>
       {[1, 2, 3, 4, 5].map((star) => (
@@ -17,4 +17,4 @@ function RatingControl({ value, onRate, size = "md", readonly = false }) {
   );
 }
 
-export default RatingControl;
+export default StarRating;

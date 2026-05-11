@@ -4,7 +4,7 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://assignmentsss-chg0cjejhtg8gwb3.polandcentral-01.azurewebsites.net/api";
 
-const httpClient = axios.create({
+const client = axios.create({
   baseURL: API_BASE_URL,
   timeout: 60000,
 });
@@ -18,7 +18,7 @@ function isValidToken(token) {
   );
 }
 
-httpClient.interceptors.request.use((config) => {
+client.interceptors.request.use((config) => {
   const requestUrl = config?.url || "";
   const isAuthRequest =
     requestUrl.includes("/auth/login") || requestUrl.includes("/auth/signup");
@@ -32,4 +32,4 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
-export default httpClient;
+export default client;

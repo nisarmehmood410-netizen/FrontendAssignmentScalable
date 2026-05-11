@@ -1,4 +1,4 @@
-function CommentThread({ comments }) {
+function CommentsList({ comments }) {
   if (!comments.length) {
     return (
       <p className="muted-copy">No comments yet. Be the first to leave one.</p>
@@ -19,4 +19,4 @@ function CommentThread({ comments }) {
   );
 }
 
-export default CommentThread;
+export default CommentsList;

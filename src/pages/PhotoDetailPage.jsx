@@ -1,20 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import Button from "../ui/Button";
-import Card from "../ui/Card";
-import CommentThread from "../components/CommentThread";
-import FeedbackEmptyState from "../components/FeedbackEmptyState";
-import FeedbackSpinner from "../components/FeedbackSpinner";
-import RatingControl from "../components/RatingControl";
-import Textarea from "../ui/Textarea";
-import {
-  addComment,
-  fetchImageById,
-  submitRating,
-} from "../services/images.api";
-import { resolveImageAuthor } from "../lib/authAndMedia.helpers";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import CommentsList from "../components/CommentsList";
+import EmptyState from "../components/EmptyState";
+import LoadingIndicator from "../components/LoadingIndicator";
+import StarRating from "../components/StarRating";
+import Textarea from "../components/Textarea";
+import { addComment, fetchImageById, submitRating } from "../api/photos";
+import { getPhotoCreatorName } from "../utils/user";
 
-function GalleryDetailPage() {
+function PhotoDetailPage() {
   const { imageId } = useParams();
 
   const [image, setImage] = useState(null);
@@ -43,7 +39,7 @@ function GalleryDetailPage() {
         const normalized = {
           ...data,
           imageUrl: data?.imageUrl || data?.url || "",
-          author: resolveImageAuthor(data) || "Unknown",
+          author: getPhotoCreatorName(data) || "Unknown",
           uploadedAt: data?.uploadedAt || data?.createdAt || "—",
           rating: data?.averageRating ?? data?.rating ?? 0,
           reviewsCount: data?.ratingCount ?? data?.reviewsCount ?? 0,
@@ -119,7 +115,7 @@ function GalleryDetailPage() {
       setComment("");
     } catch (err) {
       setCommentError(
-        err.response?.data?.message || "Failed to post comment."
+        err.response?.data?.message || "Failed to post comment.",
       );
     } finally {
       setSavingComment(false);
@@ -151,18 +147,18 @@ function GalleryDetailPage() {
     } catch (err) {
       setRating(Math.round(image?.rating || 0));
       setRatingError(
-        err.response?.data?.message || "Failed to submit rating."
+        err.response?.data?.message || "Failed to submit rating.",
       );
     } finally {
       setSavingRating(false);
     }
   }
 
-  if (loading) return <FeedbackSpinner label="Loading..." />;
+  if (loading) return <LoadingIndicator label="Loading..." />;
 
   if (error || !image) {
     return (
-      <FeedbackEmptyState
+      <EmptyState
         title="Unable to load"
         body={error || "Try another image."}
       />
@@ -218,7 +214,7 @@ function GalleryDetailPage() {
           <h3>Rating</h3>
           <p className="muted-copy">Select a score from 1–5</p>
 
-          <RatingControl value={rating} onRate={changeRating} />
+          <StarRating value={rating} onRate={changeRating} />
 
           {savingRating && <p className="muted-copy">Saving...</p>}
           {ratingError && <p className="muted-copy">{ratingError}</p>}
@@ -230,7 +226,7 @@ function GalleryDetailPage() {
             <span className="status-chip">{image.comments?.length || 0}</span>
           </div>
 
-          <CommentThread comments={image.comments || []} />
+          <CommentsList comments={image.comments || []} />
 
           <form className="comment-form" onSubmit={handleSubmitComment}>
             <Textarea
@@ -251,4 +247,4 @@ function GalleryDetailPage() {
   );
 }
 
-export default GalleryDetailPage;
+export default PhotoDetailPage;

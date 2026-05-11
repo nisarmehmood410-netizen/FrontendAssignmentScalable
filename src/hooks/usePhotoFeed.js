@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchImages } from "../services/images.api";
-import useDebouncedInput from "./useDebouncedInput";
-import { resolveImageAuthor } from "../lib/authAndMedia.helpers";
+import { fetchImages } from "../api/photos";
+import useDebouncedValue from "./useDebouncedValue";
+import { getPhotoCreatorName } from "../utils/user";
 
 function normalizePeople(people) {
   if (!people) return [];
@@ -19,7 +19,7 @@ function normalizePeople(people) {
             String(person)
               .replace(/^\s*"|"\s*$/g, "")
               .replace(/^\[|\]$/g, "")
-              .trim()
+              .trim(),
           )
           .filter(Boolean);
       }
@@ -29,7 +29,7 @@ function normalizePeople(people) {
         String(person)
           .replace(/^\s*"|"\s*$/g, "")
           .replace(/^\[|\]$/g, "")
-          .trim()
+          .trim(),
       )
       .filter(Boolean);
   }
@@ -49,8 +49,8 @@ function normalizePeople(people) {
   return [];
 }
 
-function useExploreGallery(searchTerm) {
-  const debouncedSearch = useDebouncedInput(searchTerm, 300);
+function usePhotoFeed(searchTerm) {
+  const debouncedSearch = useDebouncedValue(searchTerm, 300);
 
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +76,7 @@ function useExploreGallery(searchTerm) {
           imageUrl: img.imageUrl || img.url || "",
           url: img.url || img.imageUrl || "",
           people: normalizePeople(img.people),
-          author: resolveImageAuthor(img) || "Unknown",
+          author: getPhotoCreatorName(img) || "Unknown",
           rating: img.averageRating ?? img.rating ?? 0,
           comments: Array(img.commentCount || img.commentsCount || 0).fill({}),
         }));
@@ -101,4 +101,4 @@ function useExploreGallery(searchTerm) {
   return { images, isLoading, errorMessage };
 }
 
-export default useExploreGallery;
+export default usePhotoFeed;

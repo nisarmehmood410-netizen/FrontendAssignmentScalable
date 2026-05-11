@@ -1,4 +1,4 @@
-export const mockGalleryFallback = [
+export const samplePhotos = [
   {
     id: "courtyard-gold",
     title: "Courtyard in Golden Hour",

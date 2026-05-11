@@ -1,8 +1,9 @@
-import httpClient from "./httpClient";
-import { mockGalleryFallback } from "../fixtures/mockGallery.fallback";
+import client from "./client";
+import { samplePhotos } from "../sample-data/sample-photos";
 
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const ALLOW_MOCK_FALLBACK = import.meta.env.VITE_ENABLE_MOCK_FALLBACK === "true";
+const ALLOW_SAMPLE_FALLBACK =
+  import.meta.env.VITE_ENABLE_MOCK_FALLBACK === "true";
 
 function getListFromResponse(responseData) {
   if (Array.isArray(responseData)) return responseData;
@@ -14,7 +15,7 @@ function getListFromResponse(responseData) {
 export async function fetchImages(searchTerm = "", page = 1, limit = 10) {
   try {
     if (searchTerm && searchTerm.trim()) {
-      const res = await httpClient.get("/search", {
+      const res = await client.get("/search", {
         skipAuth: true,
         params: {
           q: searchTerm,
@@ -25,7 +26,7 @@ export async function fetchImages(searchTerm = "", page = 1, limit = 10) {
       return getListFromResponse(res.data);
     }
 
-    const res = await httpClient.get("/images", {
+    const res = await client.get("/images", {
       skipAuth: true,
       params: {
         page,
@@ -34,16 +35,16 @@ export async function fetchImages(searchTerm = "", page = 1, limit = 10) {
     });
     return getListFromResponse(res.data);
   } catch (error) {
-    if (ALLOW_MOCK_FALLBACK) {
+    if (ALLOW_SAMPLE_FALLBACK) {
       await pause(200);
       const normalizedQuery = searchTerm.trim().toLowerCase();
       return normalizedQuery
-        ? mockGalleryFallback.filter(
-            (image) =>
-              image.title.toLowerCase().includes(normalizedQuery) ||
-              image.caption.toLowerCase().includes(normalizedQuery)
+        ? samplePhotos.filter(
+            (photo) =>
+              photo.title.toLowerCase().includes(normalizedQuery) ||
+              photo.caption.toLowerCase().includes(normalizedQuery),
           )
-        : mockGalleryFallback;
+        : samplePhotos;
     }
 
     throw error;
@@ -51,7 +52,7 @@ export async function fetchImages(searchTerm = "", page = 1, limit = 10) {
 }
 
 export async function createImage(payload) {
-  const response = await httpClient.post("/images/upload", payload, {
+  const response = await client.post("/images/upload", payload, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -60,28 +61,28 @@ export async function createImage(payload) {
 }
 
 export async function addComment(imageId, comment) {
-  const response = await httpClient.post(`/images/${imageId}/comments`, {
+  const response = await client.post(`/images/${imageId}/comments`, {
     text: comment.text,
   });
   return response.data?.data || response.data;
 }
 
 export async function submitRating(imageId, rating) {
-  const response = await httpClient.post(`/images/${imageId}/rate`, {
+  const response = await client.post(`/images/${imageId}/rate`, {
     rating,
   });
   return response.data?.data || response.data;
 }
 
 export async function fetchImageById(imageId) {
-  const response = await httpClient.get(`/images/${imageId}`, {
+  const response = await client.get(`/images/${imageId}`, {
     skipAuth: true,
   });
   return response.data?.data || response.data;
 }
 
 export async function searchImages(query) {
-  const response = await httpClient.get("/search", {
+  const response = await client.get("/search", {
     skipAuth: true,
     params: { q: query },
   });

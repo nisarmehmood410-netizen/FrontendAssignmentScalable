@@ -1,4 +1,4 @@
-function FeedbackSpinner({ label = "Loading content..." }) {
+function LoadingIndicator({ label = "Loading content..." }) {
   return (
     <div className="loading-state" aria-live="polite">
       <span className="loading-orbit" />
@@ -7,4 +7,4 @@ function FeedbackSpinner({ label = "Loading content..." }) {
   );
 }
 
-export default FeedbackSpinner;
+export default LoadingIndicator;

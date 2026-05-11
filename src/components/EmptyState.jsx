@@ -1,6 +1,6 @@
 import { ImageOff } from "lucide-react";
 
-function FeedbackEmptyState({ title, body }) {
+function EmptyState({ title, body }) {
   return (
     <div className="empty-state">
       <div className="empty-state-visual" aria-hidden>
@@ -12,4 +12,4 @@ function FeedbackEmptyState({ title, body }) {
   );
 }
 
-export default FeedbackEmptyState;
+export default EmptyState;

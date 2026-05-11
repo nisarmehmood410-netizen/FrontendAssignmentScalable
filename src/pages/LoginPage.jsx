@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../ui/Button";
-import Card from "../ui/Card";
-import Input from "../ui/Input";
-import { loginUser, signupUser } from "../services/auth.api";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Input from "../components/Input";
+import { loginUser, signupUser } from "../api/auth";
 
-function SessionAuthPage({ onAuthSuccess }) {
+function LoginPage({ onAuthSuccess }) {
   const [mode, setMode] = useState("login");
   const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -153,4 +153,4 @@ function SessionAuthPage({ onAuthSuccess }) {
   );
 }
 
-export default SessionAuthPage;
+export default LoginPage;

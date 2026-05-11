@@ -1,7 +1,7 @@
-import httpClient from "./httpClient";
+import client from "./client";
 
 export async function fetchNotifications(page = 1, limit = 20) {
-  const response = await httpClient.get("/notifications", {
+  const response = await client.get("/notifications", {
     params: { page, limit },
   });
 

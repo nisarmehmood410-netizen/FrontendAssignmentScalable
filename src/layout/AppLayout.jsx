@@ -1,15 +1,15 @@
 import { NavLink, Route, Routes, Navigate, Link } from "react-router-dom";
 import { Bell, Image, Menu, X } from "lucide-react";
-import { fetchNotifications } from "../services/notifications.api";
-import Button from "../ui/Button";
+import { fetchNotifications } from "../api/notifications";
+import Button from "../components/Button";
 import { useEffect, useState } from "react";
 
-import GalleryExplorePage from "../routes/GalleryExplorePage";
-import GalleryDetailPage from "../routes/GalleryDetailPage";
-import CreatorWorkbenchPage from "../routes/CreatorWorkbenchPage";
-import SessionAuthPage from "../routes/SessionAuthPage";
+import HomePage from "../pages/HomePage";
+import PhotoDetailPage from "../pages/PhotoDetailPage";
+import UploadPage from "../pages/UploadPage";
+import LoginPage from "../pages/LoginPage";
 
-function EtherframeShell() {
+function AppLayout() {
   const [user, setUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -233,13 +233,13 @@ function EtherframeShell() {
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<GalleryExplorePage />} />
-          <Route path="/images/:imageId" element={<GalleryDetailPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/images/:imageId" element={<PhotoDetailPage />} />
           <Route
             path="/creator"
             element={
               user?.role === "creator" ? (
-                <CreatorWorkbenchPage />
+                <UploadPage />
               ) : (
                 <Navigate to="/" replace />
               )
@@ -251,7 +251,7 @@ function EtherframeShell() {
               user ? (
                 <Navigate to="/" replace />
               ) : (
-                <SessionAuthPage
+                <LoginPage
                   onAuthSuccess={(nextUser) => {
                     setUser(nextUser);
                     window.dispatchEvent(new Event("auth-change"));
@@ -272,4 +272,4 @@ function EtherframeShell() {
   );
 }
 
-export default EtherframeShell;
+export default AppLayout;
