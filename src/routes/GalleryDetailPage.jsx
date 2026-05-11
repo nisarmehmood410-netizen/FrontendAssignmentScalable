@@ -1,41 +1,40 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import Button from '../components/Button';
-import Card from '../components/Card';
-import CommentList from '../components/CommentList';
-import EmptyState from '../components/EmptyState';
-import LoadingState from '../components/LoadingState';
-import RatingStars from '../components/RatingStars';
-import Textarea from '../components/Textarea';
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
+import CommentThread from "../components/CommentThread";
+import FeedbackEmptyState from "../components/FeedbackEmptyState";
+import FeedbackSpinner from "../components/FeedbackSpinner";
+import RatingControl from "../components/RatingControl";
+import Textarea from "../ui/Textarea";
 import {
   addComment,
   fetchImageById,
-  submitRating
-} from '../services/imageService';
-import { resolveImageAuthor } from '../utils/helperFunctions';
+  submitRating,
+} from "../services/images.api";
+import { resolveImageAuthor } from "../lib/authAndMedia.helpers";
 
-function ImageDetailPage() {
+function GalleryDetailPage() {
   const { imageId } = useParams();
 
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   const [rating, setRating] = useState(0);
   const [savingComment, setSavingComment] = useState(false);
   const [savingRating, setSavingRating] = useState(false);
-  const [commentError, setCommentError] = useState('');
-  const [ratingError, setRatingError] = useState('');
+  const [commentError, setCommentError] = useState("");
+  const [ratingError, setRatingError] = useState("");
 
-  // ✅ Load image
   useEffect(() => {
     let active = true;
 
     async function load() {
       setLoading(true);
-      setError('');
+      setError("");
 
       try {
         const data = await fetchImageById(imageId);
@@ -43,9 +42,9 @@ function ImageDetailPage() {
 
         const normalized = {
           ...data,
-          imageUrl: data?.imageUrl || data?.url || '',
-          author: resolveImageAuthor(data) || 'Unknown',
-          uploadedAt: data?.uploadedAt || data?.createdAt || '—',
+          imageUrl: data?.imageUrl || data?.url || "",
+          author: resolveImageAuthor(data) || "Unknown",
+          uploadedAt: data?.uploadedAt || data?.createdAt || "—",
           rating: data?.averageRating ?? data?.rating ?? 0,
           reviewsCount: data?.ratingCount ?? data?.reviewsCount ?? 0,
           comments: (data?.comments || []).map((c) => ({
@@ -54,16 +53,16 @@ function ImageDetailPage() {
               c?.author ||
               c?.userName ||
               c?.user?.username ||
-              (typeof c?.userId === 'object' ? c.userId?.username : '') ||
-              'Unknown',
-            text: c?.text || ''
-          }))
+              (typeof c?.userId === "object" ? c.userId?.username : "") ||
+              "Unknown",
+            text: c?.text || "",
+          })),
         };
 
         setImage(normalized);
         setRating(Math.round(normalized.rating || 0));
       } catch {
-        if (active) setError('Image not found.');
+        if (active) setError("Image not found.");
       } finally {
         if (active) setLoading(false);
       }
@@ -76,29 +75,26 @@ function ImageDetailPage() {
     };
   }, [imageId]);
 
-  // ✅ Safe ID (handles id / _id)
   const id = image?.id || image?._id;
 
-  // ✅ People formatting
   const people = useMemo(() => {
-    if (!image?.people) return '—';
+    if (!image?.people) return "—";
     return Array.isArray(image.people)
-      ? image.people.join(', ')
+      ? image.people.join(", ")
       : image.people;
   }, [image]);
 
-  // ✅ Submit comment
-  async function submitComment(e) {
+  async function handleSubmitComment(e) {
     e.preventDefault();
 
     if (!id || !comment.trim()) return;
 
-    setCommentError('');
+    setCommentError("");
     setSavingComment(true);
 
     try {
       const newComment = await addComment(id, {
-        text: comment.trim()
+        text: comment.trim(),
       });
 
       setImage((prev) => ({
@@ -106,40 +102,41 @@ function ImageDetailPage() {
         comments: [
           ...(prev.comments || []),
           {
-            id: newComment?.id || newComment?._id || `new-comment-${Date.now()}`,
+            id:
+              newComment?.id ||
+              newComment?._id ||
+              `new-comment-${Date.now()}`,
             author:
               newComment?.author ||
               newComment?.userName ||
               newComment?.user?.username ||
-              'You',
-            text: newComment?.text || comment.trim()
-          }
-        ]
+              "You",
+            text: newComment?.text || comment.trim(),
+          },
+        ],
       }));
 
-      setComment('');
+      setComment("");
     } catch (err) {
-      setCommentError(err.response?.data?.message || 'Failed to post comment.');
+      setCommentError(
+        err.response?.data?.message || "Failed to post comment."
+      );
     } finally {
       setSavingComment(false);
     }
   }
 
-  // ✅ Submit rating
   async function changeRating(value) {
     if (!id) return;
 
-    setRatingError('');
+    setRatingError("");
     setRating(value);
     setSavingRating(true);
 
     try {
       const result = await submitRating(id, value);
       setImage((prev) => {
-        const nextRating =
-          result?.averageRating ??
-          result?.rating ??
-          value;
+        const nextRating = result?.averageRating ?? result?.rating ?? value;
         const nextReviewCount =
           result?.reviewsCount ??
           result?.ratingCount ??
@@ -148,26 +145,26 @@ function ImageDetailPage() {
         return {
           ...prev,
           rating: nextRating,
-          reviewsCount: nextReviewCount
+          reviewsCount: nextReviewCount,
         };
       });
     } catch (err) {
       setRating(Math.round(image?.rating || 0));
-      setRatingError(err.response?.data?.message || 'Failed to submit rating.');
+      setRatingError(
+        err.response?.data?.message || "Failed to submit rating."
+      );
     } finally {
       setSavingRating(false);
     }
   }
 
-  // ✅ Loading
-  if (loading) return <LoadingState label="Loading..." />;
+  if (loading) return <FeedbackSpinner label="Loading..." />;
 
-  // ✅ Error
   if (error || !image) {
     return (
-      <EmptyState
+      <FeedbackEmptyState
         title="Unable to load"
-        body={error || 'Try another image.'}
+        body={error || "Try another image."}
       />
     );
   }
@@ -176,10 +173,7 @@ function ImageDetailPage() {
     <div className="detail-layout">
       <section className="detail-media">
         <div className="detail-image-wrap">
-          <img
-            src={image.imageUrl}
-            alt={image.title}
-          />
+          <img src={image.imageUrl} alt={image.title} />
         </div>
       </section>
 
@@ -190,10 +184,6 @@ function ImageDetailPage() {
               <span className="eyebrow">Frame study</span>
               <h2>{image.title}</h2>
             </div>
-
-            <span className="detail-author">
-              {resolveImageAuthor(image) || image.author || 'Unknown'}
-            </span>
           </div>
 
           <p className="detail-caption">{image.caption}</p>
@@ -201,7 +191,7 @@ function ImageDetailPage() {
           <dl className="metadata-grid">
             <div>
               <dt>Location</dt>
-              <dd>{image.location || '—'}</dd>
+              <dd>{image.location || "—"}</dd>
             </div>
 
             <div>
@@ -211,13 +201,14 @@ function ImageDetailPage() {
 
             <div>
               <dt>Date</dt>
-              <dd>{image.uploadedAt || '—'}</dd>
+              <dd>{image.uploadedAt || "—"}</dd>
             </div>
 
             <div>
               <dt>Rating</dt>
               <dd>
-                {(image.rating || 0).toFixed(1)} / 5 ({image.reviewsCount || 0})
+                {(image.rating || 0).toFixed(1)} / 5 ({image.reviewsCount || 0}
+                )
               </dd>
             </div>
           </dl>
@@ -227,7 +218,7 @@ function ImageDetailPage() {
           <h3>Rating</h3>
           <p className="muted-copy">Select a score from 1–5</p>
 
-          <RatingStars value={rating} onRate={changeRating} />
+          <RatingControl value={rating} onRate={changeRating} />
 
           {savingRating && <p className="muted-copy">Saving...</p>}
           {ratingError && <p className="muted-copy">{ratingError}</p>}
@@ -236,14 +227,12 @@ function ImageDetailPage() {
         <Card>
           <div className="section-row">
             <h3>Comments</h3>
-            <span className="status-chip">
-              {image.comments?.length || 0}
-            </span>
+            <span className="status-chip">{image.comments?.length || 0}</span>
           </div>
 
-          <CommentList comments={image.comments || []} />
+          <CommentThread comments={image.comments || []} />
 
-          <form className="comment-form" onSubmit={submitComment}>
+          <form className="comment-form" onSubmit={handleSubmitComment}>
             <Textarea
               label="Comment"
               value={comment}
@@ -251,7 +240,7 @@ function ImageDetailPage() {
             />
 
             <Button type="submit" disabled={savingComment}>
-              {savingComment ? 'Posting...' : 'Post'}
+              {savingComment ? "Posting..." : "Post"}
             </Button>
           </form>
 
@@ -262,4 +251,4 @@ function ImageDetailPage() {
   );
 }
 
-export default ImageDetailPage;
+export default GalleryDetailPage;

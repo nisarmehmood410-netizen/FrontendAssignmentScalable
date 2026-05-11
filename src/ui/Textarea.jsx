@@ -1,4 +1,4 @@
-function Textarea({ label, hint, className = '', ...props }) {
+function Textarea({ label, hint, className = "", ...props }) {
   return (
     <label className={`field ${className}`.trim()}>
       <span className="field-label">{label}</span>

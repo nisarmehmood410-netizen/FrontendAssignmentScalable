@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
-import { loginUser, signupUser } from "../services/authService";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
+import Input from "../ui/Input";
+import { loginUser, signupUser } from "../services/auth.api";
 
-function AuthPage({ onAuthSuccess }) {
+function SessionAuthPage({ onAuthSuccess }) {
   const [mode, setMode] = useState("login");
   const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,12 +44,18 @@ function AuthPage({ onAuthSuccess }) {
         navigate("/", { replace: true });
       } else {
         await signupUser(payload);
-        setBanner({ variant: "success", text: "Account created successfully." });
+        setBanner({
+          variant: "success",
+          text: "Account created successfully.",
+        });
       }
     } catch (err) {
       setBanner({
         variant: "error",
-        text: err.response?.data?.message || err.message || "Something went wrong.",
+        text:
+          err.response?.data?.message ||
+          err.message ||
+          "Something went wrong.",
       });
     } finally {
       setLoading(false);
@@ -125,7 +131,11 @@ function AuthPage({ onAuthSuccess }) {
           )}
 
           {banner ? (
-            <p className={banner.variant === "error" ? "error-banner" : "success-banner"}>
+            <p
+              className={
+                banner.variant === "error" ? "error-banner" : "success-banner"
+              }
+            >
               {banner.text}
             </p>
           ) : null}
@@ -143,4 +153,4 @@ function AuthPage({ onAuthSuccess }) {
   );
 }
 
-export default AuthPage;
+export default SessionAuthPage;

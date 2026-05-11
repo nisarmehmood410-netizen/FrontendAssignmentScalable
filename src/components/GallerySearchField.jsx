@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 
-function SearchBar({ value, onChange }) {
+function GallerySearchField({ value, onChange }) {
   return (
     <div className="toolbar-panel-inner">
       <label className="field">
@@ -23,4 +23,4 @@ function SearchBar({ value, onChange }) {
   );
 }
 
-export default SearchBar;
+export default GallerySearchField;

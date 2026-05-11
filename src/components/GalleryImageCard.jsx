@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import Card from "./Card";
-import RatingStars from "./RatingStars";
-import { resolveImageAuthor } from "../utils/helperFunctions";
+import Card from "../ui/Card";
+import RatingControl from "./RatingControl";
+import { resolveImageAuthor } from "../lib/authAndMedia.helpers";
 
-function ImageCard({ image }) {
-  const commentCount =
-    image.commentCount ?? image.comments?.length ?? 0;
+function GalleryImageCard({ image }) {
+  const commentCount = image.commentCount ?? image.comments?.length ?? 0;
   const author =
     (typeof image.author === "string" && image.author.trim()
       ? image.author
@@ -35,7 +34,7 @@ function ImageCard({ image }) {
             <span>{author}</span>
 
             <div className="image-rating">
-              <RatingStars
+              <RatingControl
                 value={Math.round(image.rating || 0)}
                 readonly
                 size="sm"
@@ -49,4 +48,4 @@ function ImageCard({ image }) {
   );
 }
 
-export default ImageCard;
+export default GalleryImageCard;

@@ -1,10 +1,10 @@
-import { Aperture } from "lucide-react";
+import { ImageOff } from "lucide-react";
 
-function EmptyState({ title, body }) {
+function FeedbackEmptyState({ title, body }) {
   return (
     <div className="empty-state">
       <div className="empty-state-visual" aria-hidden>
-        <Aperture size={22} strokeWidth={2} />
+        <ImageOff size={22} strokeWidth={2} />
       </div>
       <h3>{title}</h3>
       <p>{body}</p>
@@ -12,4 +12,4 @@ function EmptyState({ title, body }) {
   );
 }
 
-export default EmptyState;
+export default FeedbackEmptyState;

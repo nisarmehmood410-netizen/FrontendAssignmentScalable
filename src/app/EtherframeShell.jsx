@@ -1,14 +1,15 @@
 import { NavLink, Route, Routes, Navigate, Link } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import ImageDetailPage from "./pages/ImageDetailPage";
-import CreatorDashboardPage from "./pages/CreatorDashboardPage";
-import AuthPage from "./pages/AuthPage";
 import { Bell, Image, Menu, X } from "lucide-react";
-import { fetchNotifications } from "./services/notificationService";
-import Button from "./components/Button";
+import { fetchNotifications } from "../services/notifications.api";
+import Button from "../ui/Button";
 import { useEffect, useState } from "react";
 
-function App() {
+import GalleryExplorePage from "../routes/GalleryExplorePage";
+import GalleryDetailPage from "../routes/GalleryDetailPage";
+import CreatorWorkbenchPage from "../routes/CreatorWorkbenchPage";
+import SessionAuthPage from "../routes/SessionAuthPage";
+
+function EtherframeShell() {
   const [user, setUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -30,7 +31,11 @@ function App() {
     function syncAuthState() {
       try {
         const storedUser = localStorage.getItem("user");
-        if (!storedUser || storedUser === "undefined" || storedUser === "null") {
+        if (
+          !storedUser ||
+          storedUser === "undefined" ||
+          storedUser === "null"
+        ) {
           setUser(null);
           return;
         }
@@ -151,7 +156,9 @@ function App() {
                     <span className="notif-trigger-label">Alerts</span>
                     <Bell size={18} strokeWidth={2} aria-hidden />
                     {notifications.length > 0 ? (
-                      <span className="notif-badge">{notifications.length}</span>
+                      <span className="notif-badge">
+                        {notifications.length}
+                      </span>
                     ) : null}
                   </Button>
 
@@ -222,18 +229,17 @@ function App() {
             </button>
           </div>
         </div>
-
       </header>
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/images/:imageId" element={<ImageDetailPage />} />
+          <Route path="/" element={<GalleryExplorePage />} />
+          <Route path="/images/:imageId" element={<GalleryDetailPage />} />
           <Route
             path="/creator"
             element={
               user?.role === "creator" ? (
-                <CreatorDashboardPage />
+                <CreatorWorkbenchPage />
               ) : (
                 <Navigate to="/" replace />
               )
@@ -245,7 +251,7 @@ function App() {
               user ? (
                 <Navigate to="/" replace />
               ) : (
-                <AuthPage
+                <SessionAuthPage
                   onAuthSuccess={(nextUser) => {
                     setUser(nextUser);
                     window.dispatchEvent(new Event("auth-change"));
@@ -266,4 +272,4 @@ function App() {
   );
 }
 
-export default App;
+export default EtherframeShell;

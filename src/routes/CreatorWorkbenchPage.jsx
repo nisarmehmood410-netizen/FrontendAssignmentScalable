@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
-import Textarea from "../components/Textarea";
-import { createImage } from "../services/imageService";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
+import Input from "../ui/Input";
+import Textarea from "../ui/Textarea";
+import { createImage } from "../services/images.api";
 
 const initialState = {
   imageFile: null,
@@ -13,7 +13,7 @@ const initialState = {
   people: "",
 };
 
-function CreatorDashboardPage() {
+function CreatorWorkbenchPage() {
   const [form, setForm] = useState(initialState);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -70,8 +70,8 @@ function CreatorDashboardPage() {
           </div>
           <div className="creator-accent-meta">
             <div>
-              <strong>Raster-ready</strong> PNG, JPG, WEBP uploads with captions and
-              light metadata tags.
+              <strong>Raster-ready</strong> PNG, JPG, WEBP uploads with captions
+              and light metadata tags.
             </div>
             <div>
               <strong>Audience sync</strong> Posts appear instantly in the explorer
@@ -168,4 +168,4 @@ function CreatorDashboardPage() {
   );
 }
 
-export default CreatorDashboardPage;
+export default CreatorWorkbenchPage;

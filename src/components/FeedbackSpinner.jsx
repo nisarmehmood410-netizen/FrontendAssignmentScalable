@@ -1,4 +1,4 @@
-function LoadingState({ label = "Loading content..." }) {
+function FeedbackSpinner({ label = "Loading content..." }) {
   return (
     <div className="loading-state" aria-live="polite">
       <span className="loading-orbit" />
@@ -7,4 +7,4 @@ function LoadingState({ label = "Loading content..." }) {
   );
 }
 
-export default LoadingState;
+export default FeedbackSpinner;
